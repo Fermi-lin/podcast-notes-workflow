@@ -1,10 +1,8 @@
-# Podcast Notes Workflow
+# 播客笔记工作流 (Podcast Notes Workflow)
 
 > 将播客/视频高效转化为结构化笔记的 AI 工作流
 >
 > 支持：小宇宙、喜马拉雅、B站视频、YouTube、TapTap 等 1000+ 平台
-
-[English](./README.md) | [中文](./README_zh.md)
 
 ---
 
@@ -43,40 +41,38 @@ sudo apt install yt-dlp ffmpeg
 sudo apt install yt-dlp ffmpeg
 ```
 
-#### 2. 创建工作目录
+#### 2. 初始化项目
 
 ```bash
-mkdir -p podcast-notes/{raw,transcripts,notes}
-cd podcast-notes
+# 克隆或下载本项目
+git clone https://github.com/Fermi-lin/podcast-notes-workflow.git
+cd podcast-notes-workflow
+
+# 运行初始化脚本
+./scripts/init.sh my-podcast-notes
+cd my-podcast-notes
+
+# 添加下载链接
+vim urls.txt
+
+# 下载音视频
+../scripts/batch-download.sh
 ```
 
-#### 3. 下载音视频
-
-```bash
-# 单个下载
-yt-dlp -o "%(title)s.%(ext)s" "视频URL"
-
-# 提取音频（推荐，文件更小）
-yt-dlp -x --audio-format mp3 "播客URL"
-
-# 批量下载
-yt-dlp -a urls.txt
-```
-
-#### 4. 飞书妙记转写（手动 ⚠️）
+#### 3. 飞书妙记转写（手动 ⚠️）
 
 1. 打开 [飞书](https://www.feishu.cn/) → 搜索「飞书妙记」
 2. 点击「上传本地文件」→ 选择下载的音视频
 3. 选择正确的语言（中文/英文/日文等）
 4. 等待 AI 转写完成（约 5 分钟/小时）
 
-#### 5. 导出文本
+#### 4. 导出文本
 
 1. 打开妙记 → 点击右上角「导出」
 2. 选择 **TXT** 或 **DOCX** 格式
 3. 保存到 `transcripts/` 目录
 
-#### 6. AI 整理笔记
+#### 5. AI 整理笔记
 
 将导出的文本发给 AI，使用以下提示词：
 
@@ -100,52 +96,7 @@ yt-dlp -a urls.txt
 
 ## 📝 全流程 Checklist
 
-复制以下内容，逐项完成：
-
-- [ ] **第一步：安装工具**
-  - [ ] 安装 `yt-dlp` (`brew install yt-dlp`)
-  - [ ] 安装 `ffmpeg` (`brew install ffmpeg`)
-  - [ ] 验证安装 (`yt-dlp --version`)
-
-- [ ] **第二步：创建目录**
-  - [ ] 创建工作目录结构
-  - [ ] 记录路径
-
-- [ ] **第三步：获取下载链接**
-  - [ ] 打开目标平台
-  - [ ] 获取视频/音频直链
-  - [ ] 测试下载
-
-- [ ] **第四步：下载音视频**
-  - [ ] 单个下载或批量下载
-  - [ ] 确认文件保存到 `raw/` 目录
-  - [ ] 检查文件完整性
-
-- [ ] **第五步：格式检查**
-  - [ ] 检查文件大小
-  - [ ] 如 >2GB，考虑压缩
-  - [ ] 确认文件可正常播放
-
-- [ ] **第六步：上传飞书妙记**
-  - [ ] 打开飞书 → 进入飞书妙记
-  - [ ] 上传音视频文件
-  - [ ] 选择正确语言
-  - [ ] 等待转写完成
-
-- [ ] **第七步：导出文本**
-  - [ ] 打开妙记
-  - [ ] 点击导出 → 选择 TXT/DOCX
-  - [ ] 保存到 `transcripts/` 目录
-
-- [ ] **第八步：AI 整理**
-  - [ ] 读取导出的文本
-  - [ ] 发送提示词给 AI
-  - [ ] 检查整理结果
-
-- [ ] **第九步：保存笔记**
-  - [ ] 将笔记保存到 `notes/` 目录
-  - [ ] 如有必要，手动补充
-  - [ ] 定期复习
+详见 [CHECKLIST.md](./CHECKLIST.md)
 
 ---
 
@@ -205,19 +156,6 @@ ffprobe -v error -show_format -show_streams input.mp4
 5. 右键点击请求 → Copy → Copy link address
 6. 用 yt-dlp 下载
 
-### 解决下载被拒绝（403/防盗链）
-
-```bash
-# 方法 1：添加 referer 头
-yt-dlp --add-header "Referer:https://目标网站.com" "URL"
-
-# 方法 2：使用浏览器 cookies
-yt-dlp --cookies-from-browser chrome "URL"
-
-# 方法 3：添加 user-agent
-yt-dlp --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" "URL"
-```
-
 ### TapTap 视频下载
 
 TapTap 使用 blob URL，需要特殊处理：
@@ -270,66 +208,29 @@ ffmpeg -i input.mp4 -vf "scale=1280:-2" -crf 28 output.mp4
 - 对于专业术语较多的内容，可能需要人工校对
 - 可以分段转写（1小时以内的片段效果更好）
 
-### Q: 如何获取喜马拉雅音频
-
-1. 使用浏览器开发者工具
-2. 播放时查看 Network 请求
-3. 筛选 `.m4a` 或 `.mp3`
-4. 复制链接下载
-
 ---
 
-## 📁 目录结构
+## 📁 项目结构
 
 ```
-podcast-notes/
-├── raw/                    # 原始音视频
-│   ├── episode-01.mp3
-│   └── episode-02.mp4
-├── transcripts/            # 飞书导出的文本
-│   ├── episode-01.txt
-│   └── episode-02.docx
-├── notes/                  # 整理后的笔记
-│   ├── episode-01-notes.md
-│   └── episode-02-notes.md
-├── scripts/                # 辅助脚本
-│   ├── init.sh            # 初始化脚本
-│   └── batch-download.sh  # 批量下载脚本
-├── urls.txt                # 下载链接列表（可选）
-├── README.md               # 本文件
-└── CHECKLIST.md            # 使用检查清单
+podcast-notes-workflow/
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.yml       # Bug 报告模板
+│   │   └── feature_request.yml  # 功能请求模板
+│   └── workflows/
+│       └── shellcheck.yml       # 脚本检查 CI
+├── scripts/
+│   ├── init.sh                 # 初始化脚本
+│   ├── batch-download.sh       # 批量下载脚本
+│   └── prompt-template.md      # AI 提示词模板
+├── CHECKLIST.md                # 全流程检查清单
+├── CONTRIBUTING.md             # 贡献指南
+├── README.md                   # 本文档
+├── SKILL.md                    # WorkBuddy Skill 定义
+├── LICENSE                     # MIT 许可证
+└── 飞书妙记上传指南.md           # 飞书妙记使用指南
 ```
-
----
-
-## 🛠️ 自动化脚本
-
-### 初始化脚本
-
-创建标准目录结构：
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Fermi-lin/podcast-notes-workflow/main/scripts/init.sh | bash
-```
-
-### 批量下载脚本
-
-准备 `urls.txt`，每行一个链接，然后运行：
-
-```bash
-./scripts/batch-download.sh urls.txt
-```
-
----
-
-## 📚 相关资源
-
-| 工具 | 链接 | 用途 |
-|------|------|------|
-| yt-dlp | [GitHub](https://github.com/yt-dlp/yt-dlp) | 视频/音频下载 |
-| FFmpeg | [官网](https://ffmpeg.org/) | 音视频处理 |
-| 飞书妙记 | [官网](https://www.feishu.cn/) | AI 转写 |
-| yt-dlp 支持站点 | [列表](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) | 检查是否支持 |
 
 ---
 
@@ -357,8 +258,5 @@ MIT License - 详见 [LICENSE](./LICENSE)
   </a>
   <a href="https://github.com/Fermi-lin/podcast-notes-workflow/network/members">
     <img src="https://img.shields.io/github/forks/Fermi-lin/podcast-notes-workflow?style=social" alt="Forks">
-  </a>
-  <a href="https://github.com/Fermi-lin/podcast-notes-workflow/issues">
-    <img src="https://img.shields.io/github/issues/Fermi-lin/podcast-notes-workflow" alt="Issues">
   </a>
 </p>
